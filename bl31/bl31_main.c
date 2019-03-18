@@ -145,6 +145,7 @@ void bl31_main(void)
 	 * Perform any platform specific runtime setup prior to cold boot exit
 	 * from BL31
 	 */
+	INFO("bl31_plat_runtime_setup...\n");
 	bl31_plat_runtime_setup();
 }
 

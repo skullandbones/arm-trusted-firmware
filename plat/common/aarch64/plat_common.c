@@ -31,7 +31,9 @@
 void bl31_plat_runtime_setup(void)
 {
 #if MULTI_CONSOLE_API
-	console_switch_state(CONSOLE_FLAG_RUNTIME);
+	INFO("console_switch_state %d\n", CONSOLE_FLAG_RUNTIME);
+/*	console_switch_state(CONSOLE_FLAG_RUNTIME); */
+	INFO("console_switch_state, any output now ?\n");
 #else
 	console_uninit();
 #endif

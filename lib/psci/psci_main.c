@@ -48,6 +48,7 @@ int psci_cpu_on(u_register_t target_cpu,
 
 unsigned int psci_version(void)
 {
+	INFO("DJ: psci_version...\n");
 	return PSCI_MAJOR_VER | PSCI_MINOR_VER;
 }
 
@@ -381,6 +382,8 @@ u_register_t psci_smc_handler(uint32_t smc_fid,
 {
 	u_register_t ret;
 
+	INFO("DJ: psci_smc_handler...\n");
+
 	if (is_caller_secure(flags))
 		return (u_register_t)SMC_UNK;
 
@@ -395,79 +398,99 @@ u_register_t psci_smc_handler(uint32_t smc_fid,
 		uint32_t r2 = (uint32_t)x2;
 		uint32_t r3 = (uint32_t)x3;
 
+		INFO("DJ: psci_smc_handler... 32-bit:smc_fid: 0x%08x\n", smc_fid);
+
 		switch (smc_fid) {
 		case PSCI_VERSION:
+			INFO("DJ: psci_smc_handler... 32-bit:psci_version()\n");
 			ret = (u_register_t)psci_version();
 			break;
 
 		case PSCI_CPU_OFF:
+			INFO("DJ: psci_smc_handler... 32-bit:psci_cpu_off()\n");
 			ret = (u_register_t)psci_cpu_off();
 			break;
 
 		case PSCI_CPU_SUSPEND_AARCH32:
+			INFO("DJ: psci_smc_handler... 32-bit:psci_cpu_suspend(0x%08x, 0x%08x, 0x%08x)\n", r1, r2, r3);
 			ret = (u_register_t)psci_cpu_suspend(r1, r2, r3);
 			break;
 
 		case PSCI_CPU_ON_AARCH32:
+			INFO("DJ: psci_smc_handler... 32-bit:psci_cpu_on(0x%08x, 0x%08x, 0x%08x)\n", r1, r2, r3);
 			ret = (u_register_t)psci_cpu_on(r1, r2, r3);
 			break;
 
 		case PSCI_AFFINITY_INFO_AARCH32:
+			INFO("DJ: psci_smc_handler... 32-bit:psci_affinity_info(0x%08x, 0x%08x)\n", r1, r2);
 			ret = (u_register_t)psci_affinity_info(r1, r2);
 			break;
 
 		case PSCI_MIG_AARCH32:
+			INFO("DJ: psci_smc_handler... 32-bit:psci_migrate(0x%08x)\n", r1);
 			ret = (u_register_t)psci_migrate(r1);
 			break;
 
 		case PSCI_MIG_INFO_TYPE:
+			INFO("DJ: psci_smc_handler... 32-bit:psci_migrate_info_type()\n");
 			ret = (u_register_t)psci_migrate_info_type();
 			break;
 
 		case PSCI_MIG_INFO_UP_CPU_AARCH32:
+			INFO("DJ: psci_smc_handler... 32-bit:psci_migrate_info_up_cpu()\n");
 			ret = psci_migrate_info_up_cpu();
 			break;
 
 		case PSCI_NODE_HW_STATE_AARCH32:
+			INFO("DJ: psci_smc_handler... 32-bit:psci_node_hw_state(0x%08x, 0x%08x)\n", r1, r2);
 			ret = (u_register_t)psci_node_hw_state(r1, r2);
 			break;
 
 		case PSCI_SYSTEM_SUSPEND_AARCH32:
+			INFO("DJ: psci_smc_handler... 32-bit:psci_system_suspend(0x%08x, 0x%08x)\n", r1, r2);
 			ret = (u_register_t)psci_system_suspend(r1, r2);
 			break;
 
 		case PSCI_SYSTEM_OFF:
+			INFO("DJ: psci_smc_handler... 32-bit:psci_system_off()\n");
 			psci_system_off();
 			/* We should never return from psci_system_off() */
 			break;
 
 		case PSCI_SYSTEM_RESET:
+			INFO("DJ: psci_smc_handler... 32-bit:psci_system_reset()\n");
 			psci_system_reset();
 			/* We should never return from psci_system_reset() */
 			break;
 
 		case PSCI_FEATURES:
+			INFO("DJ: psci_smc_handler... 32-bit:psci_features(0x%08x)\n", r1);
 			ret = (u_register_t)psci_features(r1);
 			break;
 
 #if ENABLE_PSCI_STAT
 		case PSCI_STAT_RESIDENCY_AARCH32:
+			INFO("DJ: psci_smc_handler... 32-bit:psci_stat_residency(0x%08x, 0x%08x)\n", r1, r2);
 			ret = psci_stat_residency(r1, r2);
 			break;
 
 		case PSCI_STAT_COUNT_AARCH32:
+			INFO("DJ: psci_smc_handler... 32-bit:psci_stat_count(0x%08x, 0x%08x)\n", r1, r2);
 			ret = psci_stat_count(r1, r2);
 			break;
 #endif
 		case PSCI_MEM_PROTECT:
+			INFO("DJ: psci_smc_handler... 32-bit:psci_mem_protect(0x%08x)\n", r1);
 			ret = psci_mem_protect(r1);
 			break;
 
 		case PSCI_MEM_CHK_RANGE_AARCH32:
+			INFO("DJ: psci_smc_handler... 32-bit:psci_mem_chk_range(0x%08x, 0x%08x)\n", r1, r2);
 			ret = psci_mem_chk_range(r1, r2);
 			break;
 
 		case PSCI_SYSTEM_RESET2_AARCH32:
+			INFO("DJ: psci_smc_handler... 32-bit:psci_system_reset2(0x%08x, 0x%08x)\n", r1, r2);
 			/* We should never return from psci_system_reset2() */
 			ret = psci_system_reset2(r1, r2);
 			break;
@@ -480,53 +503,66 @@ u_register_t psci_smc_handler(uint32_t smc_fid,
 	} else {
 		/* 64-bit PSCI function */
 
+		INFO("DJ: psci_smc_handler... 64-bit:smc_fid: 0x%08x\n", smc_fid);
+
 		switch (smc_fid) {
 		case PSCI_CPU_SUSPEND_AARCH64:
+			INFO("DJ: psci_smc_handler... 64-bit:psci_cpu_suspend(0x%016lx, 0x%016lx, 0x%016lx)\n", x1, x2, x3);
 			ret = (u_register_t)
 				psci_cpu_suspend((unsigned int)x1, x2, x3);
 			break;
 
 		case PSCI_CPU_ON_AARCH64:
+			INFO("DJ: psci_smc_handler... 64-bit:psci_cpu_on(0x%016lx, 0x%016lx, 0x%016lx)\n", x1, x2, x3);
 			ret = (u_register_t)psci_cpu_on(x1, x2, x3);
 			break;
 
 		case PSCI_AFFINITY_INFO_AARCH64:
+			INFO("DJ: psci_smc_handler... 64-bit:psci_affinity_info(0x%016lx, 0x%016lx)\n", x1, x2);
 			ret = (u_register_t)
 				psci_affinity_info(x1, (unsigned int)x2);
 			break;
 
 		case PSCI_MIG_AARCH64:
+			INFO("DJ: psci_smc_handler... 64-bit:psci_migrate(0x%016lx)\n", x1);
 			ret = (u_register_t)psci_migrate(x1);
 			break;
 
 		case PSCI_MIG_INFO_UP_CPU_AARCH64:
+			INFO("DJ: psci_smc_handler... 64-bit:psci_migrate_info_up_cpu()\n");
 			ret = psci_migrate_info_up_cpu();
 			break;
 
 		case PSCI_NODE_HW_STATE_AARCH64:
+			INFO("DJ: psci_smc_handler... 64-bit:psci_node_hw_state(0x%016lx, 0x%016lx)\n", x1, x2);
 			ret = (u_register_t)psci_node_hw_state(
 					x1, (unsigned int) x2);
 			break;
 
 		case PSCI_SYSTEM_SUSPEND_AARCH64:
+			INFO("DJ: psci_smc_handler... 64-bit:psci_system_suspend(0x%016lx, 0x%016lx)\n", x1, x2);
 			ret = (u_register_t)psci_system_suspend(x1, x2);
 			break;
 
 #if ENABLE_PSCI_STAT
 		case PSCI_STAT_RESIDENCY_AARCH64:
+			INFO("DJ: psci_smc_handler... 64-bit:psci_stat_residency(0x%016lx, 0x%016lx)\n", x1, x2);
 			ret = psci_stat_residency(x1, (unsigned int) x2);
 			break;
 
 		case PSCI_STAT_COUNT_AARCH64:
+			INFO("DJ: psci_smc_handler... 64-bit:psci_stat_count(0x%016lx, 0x%016lx)\n", x1, x2);
 			ret = psci_stat_count(x1, (unsigned int) x2);
 			break;
 #endif
 
 		case PSCI_MEM_CHK_RANGE_AARCH64:
+			INFO("DJ: psci_smc_handler... 64-bit:psci_mem_chk_range(0x%016lx, 0x%016lx)\n", x1, x2);
 			ret = psci_mem_chk_range(x1, x2);
 			break;
 
 		case PSCI_SYSTEM_RESET2_AARCH64:
+			INFO("DJ: psci_smc_handler... 64-bit:psci_system_reset2(0x%016lx, 0x%016lx)\n", x1, x2);
 			/* We should never return from psci_system_reset2() */
 			ret = psci_system_reset2((uint32_t) x1, x2);
 			break;
